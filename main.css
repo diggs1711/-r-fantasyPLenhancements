@@ -1,3 +1,43 @@
+.team-fixtures {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.team-name {
+    width: 30%;
+}
+
+.fixture {
+    margin-left: 5px;
+    padding-left: 5px;
+}
+
+.difficulty-1 {
+    background-color: #33cc3f;
+}
+
+.difficulty-2 {
+    background-color: #33cc3f;
+}
+
+.difficulty-3 {
+    background-color: #ebebe4;
+}
+
+.difficulty-4 {
+    background-color: #ff005a
+}
+
+.difficulty-5 {
+    background-color: #861d46;
+}
+
+.difficulty-6 {
+    background-color: #33cc3f;
+}
+
 .transfer-week {
     display: grid;
     grid-template-columns:  250px 250px;
@@ -541,3 +581,10 @@ body {
 h3 {
     color: #fff;
 }
+
+.fixture-ease-schedule {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+

@@ -6,6 +6,8 @@
   let transfersInNameTableRow = document.getElementsByClassName('transfers-in-names')[0];
   let transfersOutNameTableRow = document.getElementsByClassName('transfers-out-names')[0];
   let mostPointsPerGameDiv = document.getElementsByClassName('most-point-per-game')[0];
+  let fixtureEaseScheduleDiv = document.getElementsByClassName('fixture-ease-schedule')[0];
+  let teamNames = [];
 
   let requestData = (Url) => {
     return new Promise(function (resolve, reject) {
@@ -94,7 +96,8 @@
         points_per_game: player.points_per_game,
         expected_next: player.ep_next,
         form: player.form,
-        id: player.id
+        id: player.id,
+        team_code: player.team_code
       }
 
     });
@@ -153,13 +156,15 @@
   };
 
   let createExpectedPointsList = (data, topExpectedPoints) => {
-    console.log(topExpectedPoints)
     data.forEach(player => {
       let relativeAmount = (player.expected_next / topExpectedPoints) * 100;
-      let playerDataPromise = getDetailedPlayerData(player.id);
-      playerDataPromise.then(function (data) {
-        
-        addPlayerToExpectedPointsList(data, player, relativeAmount);
+      let promises = [];
+      promises.push(getDetailedPlayerData(player.id));
+
+      Promise.all(promises).then(function (result) {
+        result.forEach(function(r) {
+          addPlayerToExpectedPointsList(r, player, relativeAmount);
+        }); 
       });
     });
   }
@@ -180,6 +185,116 @@
     });
   };
 
+  let getOnePlayerIdFromEachTeam = (data) => {
+    let arrayOfTeamCodes = [];
+    let listOfPlayer = [];
+
+    data.forEach(function (player) {
+      if (arrayOfTeamCodes.indexOf(player.team_code) === -1) {
+
+        arrayOfTeamCodes.push(player.team_code);
+
+        listOfPlayer.push({
+          id: player.id,
+          team: player.team_code
+        });
+
+      }
+    });
+    return listOfPlayer;
+  }
+
+  let getTeamNames = () => {
+    let promise = requestData("https://fantasy.premierleague.com/drf/teams/");
+    promise.then(function(result) {
+      teamNames = result.map(function(team) {
+        return {
+          code: team.code,
+          name: team.name
+        }
+      })
+    })
+  }
+
+  let getTeamName = (id) => {
+    let result = teamNames.find(function(team) {
+      return team.code === id;
+    });
+    return result.name;
+  }
+
+  let getTransferEaseSchedule = (data) => {
+    let fixtures = [];
+    getTeamNames();
+
+    return new Promise(function (resolve, reject) {
+
+      data.forEach(function (player) {
+        let promises = [];
+        promises.push(getDetailedPlayerData(player.id));
+
+        Promise.all(promises).then(function (results) {
+          results.forEach(function (result) {
+            let nextFixtures = result["fixtures"].slice(0, 6);
+            let f = [];
+            let totalDiff = 0;
+            let teamName = getTeamName(player.team);
+
+            nextFixtures.forEach(function (fix) {
+              totalDiff += fix.difficulty;
+              
+              f.push({
+                oppenent: fix.opponent_name,
+                difficulty: fix.difficulty,
+                team: teamName
+              });
+
+            });
+
+            let avgDifficulty = totalDiff / f.length;
+
+            fixtures.push({
+              fixtures: f,
+              averageDifficulty: avgDifficulty
+            });
+
+          });
+        }).then(function () {
+          if (fixtures.length === 20) {
+            resolve(fixtures);
+          };
+        });
+      });
+    });
+  };
+
+  let createFixtureScheduleList = (data) => {
+    data = data.sort((a,b) => a.averageDifficulty - b.averageDifficulty);
+
+    data.forEach(function (d) {
+      let fixtures = d['fixtures'];
+      let teamFixtures = document.createElement("li");
+      teamFixtures.classList.add("team-fixtures");
+
+      let teamNameDiv = document.createElement("div");
+      teamNameDiv.classList.add("team-name");
+      teamNameDiv.appendChild(document.createTextNode(fixtures[0].team + "  (" +  d['averageDifficulty'].toFixed(3) + ")  "));
+
+      teamFixtures.appendChild(teamNameDiv);
+
+      fixtures.forEach(function (fixture) {
+        let fix = document.createElement("div");
+        fix.classList.add("fixture");
+        fix.classList.add("difficulty-" + fixture.difficulty);
+        teamFixtures.appendChild(fix);
+      });
+
+      fixtureEaseScheduleDiv.appendChild(teamFixtures);
+    });
+
+
+  }
+
   let playerDataPromise = requestData(mainFplUrl);
 
   playerDataPromise.then(function (data) {
@@ -190,6 +305,13 @@
     let top5HighestExpectedPoints = getTop5(playerData, 'expected_next');
     let topExpectedPoints = getTopPlayer(top5HighestExpectedPoints, 'expected_next');
     let highestAbsoluteTransferAmount = getHighestTransferAmount(top5TransfersIn, top5TransfersOut);
+
+    //Fixture
+    let playerList = getOnePlayerIdFromEachTeam(playerData);
+    let fixtureEaseSchedule = getTransferEaseSchedule(playerList);
+    fixtureEaseSchedule.then(function (result) {
+      createFixtureScheduleList(result);
+    });
 
     createExpectedPointsList(top5HighestExpectedPoints, topExpectedPoints);
     createTransferInList(top5TransfersIn, highestAbsoluteTransferAmount);
