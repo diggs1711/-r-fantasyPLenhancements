@@ -1,46 +1,167 @@
 <!DOCTYPE html>
 <html>
-  <head>
-        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:regular,bold&subset=Latin">
-    <link rel="stylesheet" href="main.css">
-  </head>
-  <body>
-      <main>
 
-      
-    <section class="transfer-week">
-            <h3 class="transfers-in-header">TRANSFERS IN</h3>
-            <h3 class="transfers-out-header">
-                   TRANSFERS OUT
-            </h3>
-            <ul class="transfers-in-names">            
-            </ul>
-            <ul class="transfers-out-names">            
-            </ul>
+<head>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:regular,bold&subset=Latin">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="charts.css">
+    <link rel="stylesheet" href="animate.css">
+</head>
+
+<body>
+
+    <nav class="menu">
+        <ul class="main-nav">
+            <li class="active nav-link stats"><a href="#">STATS</a></li>
+            <li class="nav-link leagues"><a href="#">LEAGUES</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="main-stats">
+            <section>
+                <h3>GAMEWEEK TRANSFERS</h3>
+                <div class="transfer-week">
+                    <h3 class="transfers-in-header">IN</h3>
+                    <h3 class="transfers-out-header">
+                        OUT
+                    </h3>
+                    <ul class="transfers-in-names">
+                    </ul>
+                    <ul class="transfers-out-names">
+                    </ul>
+                </div>
+
+
+
+            </section>
+            <section>
+                <h3>
+                    HIGHEST EXPECTED POINTS NEXT WEEK
+                </h3>
+                <div class="expected-points-lists">
+
+                    <div class="chart expected-points-list-GKP">
+                    </div>
+                    <div class="position-GKP">Goalkeepers</div>
+
+                    <div class="chart expected-points-list-DEF">
+
+                    </div>
+                    <div class="position-DEF">Defenders</div>
+                    <div class="chart expected-points-list-MID">
+
+                    </div>
+                    <div class="position-MID">Midfielders</div>
+                    <div class="chart expected-points-list-FWD">
+
+                    </div>
+                    <div class="position-FWD">Forwards</div>
+                </div>
+            </section>
+
+            <section>
+                <h3>
+                    FIXTURE EASE SCHEDULE (AVG FDR)
+                </h3>
+                <ul class="fixture-ease-schedule">
+                </ul>
+            </section>
+
+            <section>
+
+                <style>
+                    td {
+                        text-align: center;
+                    }
+                </style>
+                <h3>
+                    UPCOMING GAME ODDS
+                </h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                DATE
+                            </th>
+                            <th>
+                                HOME
+                            </th>
+                            <th>
+                                HOME ODDS
+                            </th>
+                            <th>
+                                AWAY
+                            </th>
+                            <th>
+                                AWAY ODDS
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="upcoming-game-odds">
+
+                    </tbody>
+
+                </table>
+            </section>
+        </div>
+
+        <div class="live-leagues hidden">
+            <table class="live-leagues-table">
+                <thead>
+                    <tr>
+                        <th>
+                            League
+                        </th>
+                        <th>
+                            Rank
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody class="live-leagues-body">
+
+                </tbody>
+            </table>
+
+            <div class="classic-leagues hidden">
+                <table class="live-classic-league-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                League
+                            </th>
+                            <th>
+                                Rank
+                            </th>
+
+                            <th>
+                                Points
+                            </th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody class="live-classic-league-body">
+
+                    </tbody>
+
+                </table>
+
+                <a class="league-back-btn">Back</a>
             </div>
 
-            
-    </section>
 
-    <section>
-            <h3>
-                    HIGHEST EXPECTED POINTS NEXT WEEK
-            </h3>
-        <dl class="expected-points-list">
-            
-        </dl>
-
-    </section>
-
-    <section>
-            <h3>
-                FIXTURE EASE SCHEDULE (NEXT 6 WEEKS)
-            </h3>
-            <ul class="fixture-ease-schedule">
-                </ul>
-    </section>
+        </div>
 
     </main>
+
     <script src="popup.js"></script>
-  </body>
+    <script src="bets.js"></script>
+    <script src="nav.js"></script>
+    <script src="leagues.js"></script>
+</body>
+
 </html>

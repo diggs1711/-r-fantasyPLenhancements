@@ -1,0 +1,65 @@
+.chart {
+    height: 25vh;
+    width: 80%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-column-gap: 5px;
+    grid-template-rows: repeat(100, 1fr);
+    margin-bottom: 0.8rem;
+}
+
+[class*="bar"] {
+    grid-row-start: 1;
+    grid-row-end: 101;
+    border-radius: 10px 10px 0 0;
+
+    text-align: center;
+    padding: 9px;
+    font-weight: bold;
+    font-size: .7rem;
+}
+
+.expected-points-list-GKP {
+    grid-area: goalkeeper;
+
+    div {
+        background-color: #ff5733;
+    }
+}
+
+.expected-points-list-DEF {
+    grid-area: defender;
+
+    div {
+        background-color: rgba(199, 0, 56, 0.664);
+    }
+}
+
+.expected-points-list-MID {
+    grid-area: midfielder;
+
+    div {
+        background-color: #581845;
+    }
+}
+
+.expected-points-list-FWD {
+    grid-area: forward;
+
+    div {
+        background-color: rgba(214, 13, 90, 0.699);
+    }
+}
+
+$totalRows: 101;
+
+@mixin chartValue($data) {
+    $result: $totalRows - $data;
+    grid-row-start: $result;
+}
+
+@for $i from 1 through $totalRows {
+    .bar-#{$i} {
+        @include chartValue($i);
+    }
+}

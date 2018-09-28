@@ -50,6 +50,13 @@
     return players.sort((a, b) => b[atrribute] - a[atrribute]).slice(0, 5);
   }
 
+  function getTop5ByPosition(players, atrribute, positionId) {
+    let playersFromPosition = players.filter(player => {
+      return player.element_type === positionId;
+    })
+    return playersFromPosition.sort((a, b) => b[atrribute] - a[atrribute]).slice(0, 5);
+  }
+
   let getTopPlayer = (players, attribute) => {
     return players.slice(0, 1)[0][attribute];
   }
@@ -66,22 +73,24 @@
     return data.fixtures_summary[0].is_home;
   }
 
-  function createExpectedPointsPlayerElement(player, p, nextOpp, isHome) {
-    let expectedList = document.getElementsByClassName('expected-points-list')[0];
-    let playerEle = document.createElement('dd');
-    playerEle.classList.add("percentage");
-    playerEle.classList.add("percentage-" + Math.round(p));
+  function createExpectedPointsPlayerElement(player, p, nextOpp, isHome, position) {
+    let expectedList = document.getElementsByClassName('expected-points-list-' + position)[0];
+    let playerEle = document.createElement('div');
+    playerEle.classList.add("bar-" + Math.round(p));
+    playerEle.appendChild(document.createTextNode(player.name));
+    playerEle.appendChild(document.createElement("br"));
+    playerEle.appendChild(document.createTextNode(player.expected_next));
 
-    let text = document.createElement("span");
-    text.classList.add("text");
-    let t = document.createTextNode(player.name + " - " + player.expected_next);
-    let br = document.createElement("br");
-    let venue = isHome ? "(H)" : "(A)";
-    let n = document.createTextNode(nextOpp + " " + venue);
-    text.appendChild(t);
-    text.appendChild(br);
-    text.appendChild(n);
-    playerEle.appendChild(text);
+    // let text = document.createElement("span");
+    // text.classList.add("text");
+    // let t = document.createTextNode(player.name + " - " + player.expected_next);
+    // let br = document.createElement("br");
+    // let venue = isHome ? "(H)" : "(A)";
+    // let n = document.createTextNode(nextOpp + " " + venue);
+    // text.appendChild(t);
+    // text.appendChild(br);
+    // text.appendChild(n);
+    // playerEle.appendChild(text);
     expectedList.appendChild(playerEle);
   }
 
@@ -97,16 +106,17 @@
         expected_next: player.ep_next,
         form: player.form,
         id: player.id,
-        team_code: player.team_code
+        team_code: player.team_code,
+        element_type: player.element_type
       }
 
     });
   };
 
-  let addPlayerToExpectedPointsList = (result, player, relativeAmount) => {
+  let addPlayerToExpectedPointsList = (result, player, relativeAmount, position) => {
     let nextOpp = getNextOppentent(result);
     let isHome = isHomeGame(result);
-    createExpectedPointsPlayerElement(player, relativeAmount, nextOpp, isHome);
+    createExpectedPointsPlayerElement(player, relativeAmount, nextOpp, isHome, position);
   };
 
   //   mostPointsPerGame.forEach(player => {
@@ -155,16 +165,17 @@
     return mostOut > mostIn ? mostOut : mostIn;
   };
 
-  let createExpectedPointsList = (data, topExpectedPoints) => {
+  let createExpectedPointsList = (data, topExpectedPoints, position) => {
+
     data.forEach(player => {
       let relativeAmount = (player.expected_next / topExpectedPoints) * 100;
       let promises = [];
       promises.push(getDetailedPlayerData(player.id));
 
       Promise.all(promises).then(function (result) {
-        result.forEach(function(r) {
-          addPlayerToExpectedPointsList(r, player, relativeAmount);
-        }); 
+        result.forEach(function (r) {
+          addPlayerToExpectedPointsList(r, player, relativeAmount, position);
+        });
       });
     });
   }
@@ -205,27 +216,31 @@
   }
 
   let getTeamNames = () => {
-    let promise = requestData("https://fantasy.premierleague.com/drf/teams/");
-    promise.then(function(result) {
-      teamNames = result.map(function(team) {
-        return {
-          code: team.code,
-          name: team.name
-        }
-      })
-    })
+    return requestData("https://fantasy.premierleague.com/drf/teams/");
   }
 
   let getTeamName = (id) => {
-    let result = teamNames.find(function(team) {
+
+    let result = teamNames.find(function (team) {
       return team.code === id;
-    });
-    return result.name;
+    }).name;
+
+    return result;
   }
 
-  let getTransferEaseSchedule = (data) => {
+  let parseTeamNames = function (teams) {
+
+    teamNames = teams.map(function (team) {
+      return {
+        code: team.code,
+        name: team.name
+      }
+    })
+  }
+
+  let getTransferEaseSchedule = async function (data) {
     let fixtures = [];
-    getTeamNames();
+    var teams = parseTeamNames(await getTeamNames());
 
     return new Promise(function (resolve, reject) {
 
@@ -242,7 +257,7 @@
 
             nextFixtures.forEach(function (fix) {
               totalDiff += fix.difficulty;
-              
+
               f.push({
                 oppenent: fix.opponent_name,
                 difficulty: fix.difficulty,
@@ -269,7 +284,7 @@
   };
 
   let createFixtureScheduleList = (data) => {
-    data = data.sort((a,b) => a.averageDifficulty - b.averageDifficulty);
+    data = data.sort((a, b) => a.averageDifficulty - b.averageDifficulty);
 
     data.forEach(function (d) {
       let fixtures = d['fixtures'];
@@ -278,7 +293,7 @@
 
       let teamNameDiv = document.createElement("div");
       teamNameDiv.classList.add("team-name");
-      teamNameDiv.appendChild(document.createTextNode(fixtures[0].team + "  (" +  d['averageDifficulty'].toFixed(3) + ")  "));
+      teamNameDiv.appendChild(document.createTextNode(fixtures[0].team + "  (" + d['averageDifficulty'].toFixed(3) + ")  "));
 
       teamFixtures.appendChild(teamNameDiv);
 
@@ -286,6 +301,7 @@
         let fix = document.createElement("div");
         fix.classList.add("fixture");
         fix.classList.add("difficulty-" + fixture.difficulty);
+        fix.title = fixture.oppenent;
         teamFixtures.appendChild(fix);
       });
 
@@ -298,24 +314,37 @@
   let playerDataPromise = requestData(mainFplUrl);
 
   playerDataPromise.then(function (data) {
+    //player data
     let playerData = parsePlayerData(data['elements']);
+
+    //gameweek transfers
     let top5TransfersIn = getTop5(playerData, 'transfers_in_week');
     let top5TransfersOut = getTop5(playerData, 'transfers_out_week');
-    let top5PointsPerGame = getTop5(playerData, 'points_per_game');
-    let top5HighestExpectedPoints = getTop5(playerData, 'expected_next');
-    let topExpectedPoints = getTopPlayer(top5HighestExpectedPoints, 'expected_next');
     let highestAbsoluteTransferAmount = getHighestTransferAmount(top5TransfersIn, top5TransfersOut);
+    createTransferInList(top5TransfersIn, highestAbsoluteTransferAmount);
+    createTransferOutList(top5TransfersOut, highestAbsoluteTransferAmount);
 
-    //Fixture
+    //Fixture ease schedule
     let playerList = getOnePlayerIdFromEachTeam(playerData);
     let fixtureEaseSchedule = getTransferEaseSchedule(playerList);
     fixtureEaseSchedule.then(function (result) {
       createFixtureScheduleList(result);
     });
 
-    createExpectedPointsList(top5HighestExpectedPoints, topExpectedPoints);
-    createTransferInList(top5TransfersIn, highestAbsoluteTransferAmount);
-    createTransferOutList(top5TransfersOut, highestAbsoluteTransferAmount);
+    //Points per game
+    let top5PointsPerGame = getTop5(playerData, 'points_per_game');
+
+    //Expected Points
+    let postions = requestData("https://fantasy.premierleague.com/drf/element-types/");
+    postions.then(function (result) {
+      result.forEach(function (position) {
+        let top5 = getTop5ByPosition(playerData, 'expected_next', position.id);
+        createExpectedPointsList(top5, top5[0].expected_next, position.plural_name_short);
+      });
+    });
+
+
+
   });
 
 })();
