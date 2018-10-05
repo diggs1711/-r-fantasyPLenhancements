@@ -7,6 +7,7 @@
   let transfersOutNameTableRow = document.getElementsByClassName('transfers-out-names')[0];
   let mostPointsPerGameDiv = document.getElementsByClassName('most-point-per-game')[0];
   let fixtureEaseScheduleDiv = document.getElementsByClassName('fixture-ease-schedule')[0];
+  let formTableDiv = document.getElementsByClassName('form-table')[0];
   let teamNames = [];
 
   let requestData = (Url) => {
@@ -77,7 +78,7 @@
     let expectedList = document.getElementsByClassName('expected-points-list-' + position)[0];
     let playerEle = document.createElement('div');
     playerEle.classList.add("bar-" + Math.round(p));
-    
+
     let expectedPointsElement = document.createElement("span");
     expectedPointsElement.classList.add("expected-points__name");
     expectedPointsElement.appendChild(document.createTextNode(player.expected_next));
@@ -85,7 +86,7 @@
 
     playerEle.appendChild(document.createElement("br"));
     playerEle.appendChild(document.createTextNode(player.name));
-    
+
 
     // let text = document.createElement("span");
     // text.classList.add("text");
@@ -246,8 +247,8 @@
 
   let getTransferEaseSchedule = async function (data) {
     let fixtures = [];
-    var teams = parseTeamNames(await getTeamNames());
-
+    parseTeamNames(await getTeamNames());
+    
     return new Promise(function (resolve, reject) {
 
       data.forEach(function (player) {
@@ -256,6 +257,39 @@
 
         Promise.all(promises).then(function (results) {
           results.forEach(function (result) {
+            let history = result["history"].slice(-6);
+            let pastResults = [];
+            let totalPointsOverLast6 = 0;
+
+            history.forEach(function(fixture) {
+              let wasHome = fixture.was_home;
+              let homeTeamGoals = fixture.team_h_score;
+              let awayTeamGoals = fixture.team_a_score;
+              
+              let didWinMatch = 0;
+
+              if(wasHome) {
+                if(homeTeamGoals > awayTeamGoals) {
+                  didWinMatch = 3;//won match
+                } else if(homeTeamGoals < awayTeamGoals) {
+                  didWinMatch = 0;//lost match
+                } else {
+                  didWinMatch = 1;//draw
+                }
+              } else {
+                if(homeTeamGoals > awayTeamGoals) {
+                  didWinMatch = 0;//lost match
+                } else if(homeTeamGoals < awayTeamGoals) {
+                  didWinMatch = 3;//won match
+                } else {
+                  didWinMatch = 1;//draw
+                }
+              }
+
+              totalPointsOverLast6 += didWinMatch;
+              pastResults.push(didWinMatch);
+            })
+
             let nextFixtures = result["fixtures"].slice(0, 6);
             let f = [];
             let totalDiff = 0;
@@ -266,17 +300,20 @@
 
               f.push({
                 oppenent: fix.opponent_name,
-                difficulty: fix.difficulty,
-                team: teamName
+                difficulty: fix.difficulty   
               });
 
             });
 
             let avgDifficulty = totalDiff / f.length;
+            let avgPoints = totalPointsOverLast6 / 6;
 
             fixtures.push({
               fixtures: f,
-              averageDifficulty: avgDifficulty
+              history: pastResults,
+              avgPoints : avgPoints,
+              averageDifficulty: avgDifficulty,
+              team: teamName
             });
 
           });
@@ -290,16 +327,16 @@
   };
 
   let createFixtureScheduleList = (data) => {
-    data = data.sort((a, b) => a.averageDifficulty - b.averageDifficulty);
-
-    data.forEach(function (d) {
+    let avgDiff = data.sort((a, b) => a.averageDifficulty - b.averageDifficulty);
+    
+    avgDiff.forEach(function (d) {
       let fixtures = d['fixtures'];
       let teamFixtures = document.createElement("li");
       teamFixtures.classList.add("team-fixtures");
 
       let teamNameDiv = document.createElement("div");
       teamNameDiv.classList.add("team-name");
-      teamNameDiv.appendChild(document.createTextNode(fixtures[0].team));// + "  (" + d['averageDifficulty'].toFixed(3) + ")  "));
+      teamNameDiv.appendChild(document.createTextNode(d.team)); // + "  (" + d['averageDifficulty'].toFixed(3) + ")  "));
 
       teamFixtures.appendChild(teamNameDiv);
 
@@ -312,6 +349,29 @@
       });
 
       fixtureEaseScheduleDiv.appendChild(teamFixtures);
+    });
+
+    let avgPoints = data.sort((a, b) => b.avgPoints - a.avgPoints);
+    avgPoints.forEach(function (d) {
+      let history = d['history'];
+      let teamResult = document.createElement("li");
+      teamResult.classList.add("team-fixtures");
+
+      let teamNameDiv = document.createElement("div");
+      teamNameDiv.classList.add("team-name");
+      teamNameDiv.appendChild(document.createTextNode(d.team)); // + "  (" + d['averageDifficulty'].toFixed(3) + ")  "));
+
+      teamResult.appendChild(teamNameDiv);
+
+      history.forEach(function (matchResult) {
+        let fix = document.createElement("div");
+        fix.classList.add("fixture");
+        fix.classList.add("match-result-" + matchResult);
+        //fix.title = fixture.oppenent;
+        teamResult.appendChild(fix);
+      });
+
+      formTableDiv.appendChild(teamResult);
     });
 
 
@@ -338,7 +398,7 @@
     });
 
     //Points per game
-    let top5PointsPerGame = getTop5(playerData, 'points_per_game');
+    //let top5PointsPerGame = getTop5(playerData, 'points_per_game');
 
     //Expected Points
     let postions = requestData("https://fantasy.premierleague.com/drf/element-types/");

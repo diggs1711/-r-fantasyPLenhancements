@@ -19,7 +19,7 @@
   text-align: center;
   padding: 9px;
   font-weight: bold;
-  font-size: .7rem;
+  font-size: .6rem;
 }
 
 .expected-points-list-GKP {
@@ -27,6 +27,18 @@
 }
 
 .expected-points-list-GKP div {
+  background-color: #ff5733;
+}
+
+.match-result-1 {
+  background-color: #ebebe4;
+}
+
+.match-result-3 {
+  background-color: #33cc3f;
+}
+
+.match-result-0 {
   background-color: #ff5733;
 }
 

@@ -617,17 +617,33 @@ body {
 
 h3 {
     color: #fff;
-    font-size: 1.5rem;
+    font-size: 1rem;
 }
 
 h4 {
+    margin-top: 0;
     color: #fff;
 }
 
-.fixture-ease-schedule {
+.fixture-ease-schedule, .form-table {
     list-style: none;
     margin: 0;
     padding: 0;
+    flex-wrap: wrap;
+}
+
+.fixture-section {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-areas: "feheading ftheading"
+}
+
+.fixture-ease-schedule__heading {
+    grid-area: feheading;
+}
+
+.form-table__heading {
+    grid-area: ftheading;
 }
 
 nav ul {
@@ -691,9 +707,8 @@ nav ul li a.current {
 .league-player,
 .match-bet {
     cursor: pointer;
-    padding: .8rem;
-    border-bottom: #ebebe4 1px solid;
-    font-size: .8rem;
+    padding: .6rem;
+    font-size: .7rem;
     font-weight: bold;
 }
 
@@ -711,8 +726,16 @@ nav ul li a.current {
 }
 
 th {
-    font-size: 1rem;
-    padding: 1rem;
+    font-size: .6rem;
+    padding: .6rem;
+    background-color: #303030;
+    color: #ffffff;
+}
+
+
+tr:nth-child(odd) {
+    background: #000000;
+    color: #fff;
 }
 
 table {
@@ -720,5 +743,9 @@ table {
 }
 
 section {
-    padding: 2rem 0 2rem 0;
+    padding: 2rem 0;
+    padding-top: 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }

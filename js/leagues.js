@@ -13,7 +13,6 @@
     const backToLeagueListBtn = document.querySelectorAll(".league-back-btn")[0];
     const leagesDiv = document.querySelectorAll(".live-leagues")[0];
     const leagueName = document.querySelectorAll(".league-name")[0];
-    let livePlayerData = {};
 
     backToLeagueListBtn.addEventListener("click", event => {
         classicLeagueDiv.classList.add("hidden");
@@ -87,13 +86,13 @@
     async function openMiniLeagueTable(league, currentGameweek) {
         let leagueDataPromise = requestData(leagueUrl + league.id);
         liveLeaguesTable.classList.add('animated', 'fadeOutDown');
-        
 
-        leagueDataPromise.then(function (result) {
+
+        leagueDataPromise.then(async function (result) {
             leagueName.innerHTML = "";
             leagueName.appendChild(document.createTextNode(result.league.name));
-            livePlayerData = (await getLiveData(currentGameweek)).elements;
-            
+            let liveData = await getLiveData(currentGameweek);
+            let livePlayerData = liveData.elements;
             let league = result.standings.results.map(function (player) {
                 return {
                     "name": player.entry_name,
@@ -117,9 +116,11 @@
             Promise.all(latestPicksPromises).then(function (players) {
                 players.forEach(function (result, index) {
                     let currPlayer = leaguePlayers[index];
+                    console.log(result);
                     let currentGameweekPoints = currPlayer.gameweek_points;
                     let playerPicks = result.picks;
                     let latestPlayerPoints = 0;
+
                     playerPicks.forEach(function (pick) {
                         if (result.active_chip === "bboost" || pick.position <= 11) {
                             let playerElementId = pick.element;
@@ -130,16 +131,16 @@
 
                     let addedPoints = 0;
 
-                    if(latestPlayerPoints >= 0 && currentGameweekPoints >= 0) {
+                    if (latestPlayerPoints >= 0 && currentGameweekPoints >= 0) {
                         addedPoints = latestPlayerPoints - currentGameweekPoints;
                     } else {
-                        addedPoints -= (Math.abs(latestPlayerPoints) + Math.abs(currentGameweekPoints));
+                        addedPoints = 0 - (Math.abs(latestPlayerPoints) + Math.abs(currentGameweekPoints));
                     }
 
                     if (currentGameweekPoints !== latestPlayerPoints) {
                         currPlayer.gameweek_points += addedPoints;
                     }
-                    
+
                     currPlayer.chip = result.active_chip;
                     currPlayer.total += addedPoints;
                     leaguePlayers[index] = currPlayer;
@@ -148,7 +149,9 @@
                 leaguePlayers.sort((a, b) => b.total - a.total);
 
                 classicLeagueBody.innerHTML = "";
-                leaguePlayers.forEach(function (player) {
+
+                leaguePlayers.forEach(function (player, index) {
+                    player.rank = index + 1;
                     let row = document.createElement("tr");
                     for (const key in player) {
                         if (player.hasOwnProperty(key) && key != "entry_id") {

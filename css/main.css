@@ -52,8 +52,8 @@ main {
 .transfer-week {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: 50% 50%;
-      grid-template-columns: 50% 50%;
+  -ms-grid-columns: 250px 250px;
+      grid-template-columns: 250px 250px;
   grid-gap: 10px;
   background-color: #fff;
   color: #444;
@@ -666,17 +666,40 @@ body {
 
 h3 {
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 
 h4 {
+  margin-top: 0;
   color: #fff;
 }
 
-.fixture-ease-schedule {
+.fixture-ease-schedule, .form-table {
   list-style: none;
   margin: 0;
   padding: 0;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
+.fixture-section {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 50% 50%;
+      grid-template-columns: 50% 50%;
+      grid-template-areas: "feheading ftheading";
+}
+
+.fixture-ease-schedule__heading {
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  grid-area: feheading;
+}
+
+.form-table__heading {
+  -ms-grid-row: 1;
+  -ms-grid-column: 2;
+  grid-area: ftheading;
 }
 
 nav ul {
@@ -748,16 +771,14 @@ nav ul li a.current {
 .live-leagues,
 .main-stats {
   min-width: 300px;
-  text-align: center;
 }
 
 .league,
 .league-player,
 .match-bet {
   cursor: pointer;
-  padding: .8rem;
-  border-bottom: #ebebe4 1px solid;
-  font-size: .8rem;
+  padding: .6rem;
+  font-size: .7rem;
   font-weight: bold;
 }
 
@@ -775,8 +796,15 @@ nav ul li a.current {
 }
 
 th {
-  font-size: 1rem;
-  padding: 1rem;
+  font-size: .6rem;
+  padding: .6rem;
+  background-color: #303030;
+  color: #ffffff;
+}
+
+tr:nth-child(odd) {
+  background: #000000;
+  color: #fff;
 }
 
 table {
@@ -784,6 +812,17 @@ table {
 }
 
 section {
-  padding: 2rem 0 2rem 0;
+  padding: 2rem 0;
+  padding-top: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 /*# sourceMappingURL=main.css.map */
