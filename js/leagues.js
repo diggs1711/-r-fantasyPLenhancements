@@ -119,6 +119,8 @@
                     let currentGameweekPoints = currPlayer.gameweek_points;
                     let playerPicks = result.picks;
                     let latestPlayerPoints = 0;
+                    currPlayer.gameweek_transfers = result.entry_history.event_transfers;
+                    currPlayer.transfer_cost =  0 - result.entry_history.event_transfers_cost;
 
                     playerPicks.forEach(function (pick) {
                         if (result.active_chip === "bboost" || pick.position <= 11) {
@@ -149,16 +151,24 @@
                     }
 
                     currPlayer.chip = result.active_chip;
-                    currPlayer.total += addedPoints;
+                    currPlayer.total += addedPoints - result.entry_history.event_transfers_cost;
                     leaguePlayers[index] = currPlayer;
                 })
 
                 leaguePlayers.sort((a, b) => b.total - a.total);
 
                 classicLeagueBody.innerHTML = "";
-
+                let previousRank = 0;
+                let previousPoints = 0;
                 leaguePlayers.forEach(function (player, index) {
-                    player.rank = index + 1;
+
+                    if(previousPoints === player.total) {
+                        player.rank = previousRank;
+                    } else {
+                        previousRank = index + 1;
+                    }
+                    previousPoints = player.total;
+                    
                     let row = document.createElement("tr");
                     for (const key in player) {
                         if (player.hasOwnProperty(key) && key != "entry_id") {
