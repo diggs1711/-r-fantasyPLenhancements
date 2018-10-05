@@ -31,9 +31,9 @@
                     upcomingGames[element.gsx$eventname.$t] = {
                         "date": element.gsx$commence.$t,
                         "homeTeam": "",
-                        "homeOdds": element.gsx$odd1.$t,
+                        "homeOdds": Math.round((1 / Number(element.gsx$odd2.$t)) * 100) + "%",
                         "awayTeam": "",
-                        "awayOdds": element.gsx$odd2.$t,          
+                        "awayOdds": Math.round( (1 / element.gsx$odd1.$t) * 100) + "%",          
                     }
                 }
 
@@ -47,8 +47,8 @@
             if (upcomingGames.hasOwnProperty(key)) {
                 const element = upcomingGames[key];
                 let teams = key.split("_");
-                element.homeTeam = teams[0];
-                element.awayTeam = teams[1];
+                element.homeTeam = teams[1];
+                element.awayTeam = teams[0];
                 upcomingGamesArray.push(element);
             }
         }
@@ -61,6 +61,7 @@
                     if (game.hasOwnProperty(key)) {
                         const element = game[key];
                         let cell = document.createElement("td");
+                        cell.classList.add("match-bet");
                         cell.appendChild(document.createTextNode(element));
                         row.appendChild(cell);
                     }

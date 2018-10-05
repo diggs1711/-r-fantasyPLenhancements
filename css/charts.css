@@ -30,6 +30,10 @@
   background-color: #ff5733;
 }
 
+.expected-points__name {
+  font-size: 1.4rem;
+}
+
 .expected-points-list-DEF {
   grid-area: defender;
 }

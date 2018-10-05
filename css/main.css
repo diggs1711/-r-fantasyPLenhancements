@@ -52,8 +52,8 @@ main {
 .transfer-week {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: 250px 250px;
-      grid-template-columns: 250px 250px;
+  -ms-grid-columns: 50% 50%;
+      grid-template-columns: 50% 50%;
   grid-gap: 10px;
   background-color: #fff;
   color: #444;
@@ -666,6 +666,11 @@ body {
 
 h3 {
   color: #fff;
+  font-size: 1.5rem;
+}
+
+h4 {
+  color: #fff;
 }
 
 .fixture-ease-schedule {
@@ -681,11 +686,18 @@ nav ul {
   border-radius: 3px;
 }
 
+.nav-link {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+
 nav ul li a {
   display: block;
   padding: 0.5rem 1rem;
   color: #fff;
   text-decoration: none;
+  text-align: center;
 }
 
 nav ul li a.current {
@@ -711,14 +723,14 @@ nav ul li a.current {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin-right: 30px;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 100%;
 }
 
 .active {
@@ -736,14 +748,16 @@ nav ul li a.current {
 .live-leagues,
 .main-stats {
   min-width: 300px;
+  text-align: center;
 }
 
 .league,
-.league-player {
+.league-player,
+.match-bet {
   cursor: pointer;
-  padding: .5rem;
+  padding: .8rem;
   border-bottom: #ebebe4 1px solid;
-  font-size: .7rem;
+  font-size: .8rem;
   font-weight: bold;
 }
 
@@ -757,9 +771,19 @@ nav ul li a.current {
   display: inline-block;
   width: 50%;
   cursor: pointer;
+  text-align: center;
 }
 
 th {
   font-size: 1rem;
+  padding: 1rem;
+}
+
+table {
+  margin-bottom: 20px;
+}
+
+section {
+  padding: 2rem 0 2rem 0;
 }
 /*# sourceMappingURL=main.css.map */

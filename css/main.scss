@@ -617,6 +617,11 @@ body {
 
 h3 {
     color: #fff;
+    font-size: 1.5rem;
+}
+
+h4 {
+    color: #fff;
 }
 
 .fixture-ease-schedule {
@@ -632,11 +637,16 @@ nav ul {
     border-radius: 3px;
 }
 
+.nav-link {
+    flex: 1;
+}
+
 nav ul li a {
     display: block;
     padding: 0.5rem 1rem;
     color: #fff;
     text-decoration: none;
+    text-align: center;
 
 }
 
@@ -655,9 +665,9 @@ nav ul li a.current {
 
 .main-nav {
     display: flex;
-    margin-right: 30px;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: center;
+    width: 100%;
 }
 
 .active {
@@ -678,11 +688,12 @@ nav ul li a.current {
 }
 
 .league,
-.league-player {
+.league-player,
+.match-bet {
     cursor: pointer;
-    padding: .5rem;
+    padding: .8rem;
     border-bottom: #ebebe4 1px solid;
-    font-size: .7rem;
+    font-size: .8rem;
     font-weight: bold;
 }
 
@@ -696,8 +707,18 @@ nav ul li a.current {
     display: inline-block;
     width: 50%;
     cursor: pointer;
+    text-align: center;
 }
 
 th {
     font-size: 1rem;
+    padding: 1rem;
+}
+
+table {
+    margin-bottom: 20px;
+}
+
+section {
+    padding: 2rem 0 2rem 0;
 }

@@ -77,9 +77,15 @@
     let expectedList = document.getElementsByClassName('expected-points-list-' + position)[0];
     let playerEle = document.createElement('div');
     playerEle.classList.add("bar-" + Math.round(p));
-    playerEle.appendChild(document.createTextNode(player.name));
+    
+    let expectedPointsElement = document.createElement("span");
+    expectedPointsElement.classList.add("expected-points__name");
+    expectedPointsElement.appendChild(document.createTextNode(player.expected_next));
+    playerEle.appendChild(expectedPointsElement);
+
     playerEle.appendChild(document.createElement("br"));
-    playerEle.appendChild(document.createTextNode(player.expected_next));
+    playerEle.appendChild(document.createTextNode(player.name));
+    
 
     // let text = document.createElement("span");
     // text.classList.add("text");
@@ -293,7 +299,7 @@
 
       let teamNameDiv = document.createElement("div");
       teamNameDiv.classList.add("team-name");
-      teamNameDiv.appendChild(document.createTextNode(fixtures[0].team + "  (" + d['averageDifficulty'].toFixed(3) + ")  "));
+      teamNameDiv.appendChild(document.createTextNode(fixtures[0].team));// + "  (" + d['averageDifficulty'].toFixed(3) + ")  "));
 
       teamFixtures.appendChild(teamNameDiv);
 

@@ -3,9 +3,9 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:regular,bold&subset=Latin">
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="charts.css">
-    <link rel="stylesheet" href="animate.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/charts.css">
+    <link rel="stylesheet" href="css/animate.css">
 </head>
 
 <body>
@@ -22,10 +22,10 @@
             <section>
                 <h3>GAMEWEEK TRANSFERS</h3>
                 <div class="transfer-week">
-                    <h3 class="transfers-in-header">IN</h3>
-                    <h3 class="transfers-out-header">
+                    <h4 class="transfers-in-header">IN</h4>
+                    <h4 class="transfers-out-header">
                         OUT
-                    </h3>
+                    </h4>
                     <ul class="transfers-in-names">
                     </ul>
                     <ul class="transfers-out-names">
@@ -62,7 +62,7 @@
 
             <section>
                 <h3>
-                    FIXTURE EASE SCHEDULE (AVG FDR)
+                    FIXTURE EASE SCHEDULE
                 </h3>
                 <ul class="fixture-ease-schedule">
                 </ul>
@@ -76,7 +76,7 @@
                     }
                 </style>
                 <h3>
-                    UPCOMING GAME ODDS
+                    UPCOMING MATCHES
                 </h3>
                 <table>
                     <thead>
@@ -85,16 +85,16 @@
                                 DATE
                             </th>
                             <th>
-                                HOME
+                                TEAM 1
                             </th>
                             <th>
-                                HOME ODDS
+                                WIN LIKELIHOOD
                             </th>
                             <th>
-                                AWAY
+                                TEAM 2
                             </th>
                             <th>
-                                AWAY ODDS
+                                WIN LIKELIHOOD
                             </th>
                         </tr>
                     </thead>
@@ -129,17 +129,26 @@
             <div class="classic-leagues hidden">
                 <table class="live-classic-league-table">
                     <thead>
+                        <h3 class="league-name"></h3>
                         <tr>
                             <th>
-                                League
+                                Team Name
                             </th>
                             <th>
-                                Rank
+                                Position
                             </th>
 
                             <th>
                                 Points
                             </th>
+
+                            <th>
+                                    GW Points
+                            </th>
+
+                            <th>
+                                Chip
+                        </th>
 
                         </tr>
                     </thead>
@@ -158,10 +167,10 @@
 
     </main>
 
-    <script src="popup.js"></script>
-    <script src="bets.js"></script>
-    <script src="nav.js"></script>
-    <script src="leagues.js"></script>
+    <script src="js/popup.min.js"></script>
+    <script src="js/bets.min.js"></script>
+    <script src="js/nav.min.js"></script>
+    <script src="js/leagues.min.js"></script>
 </body>
 
 </html>
