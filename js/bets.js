@@ -27,7 +27,8 @@
     betDataPromise.then(function (data) {
         data.feed.entry.forEach(element => {
             if (element.gsx$status.$t === 'Pending') {
-                if (!upcomingGames[element.gsx$eventname.$t]) {
+                console.log(element.gsx$commence.$t)
+                if (!Date(element.gsx$commence.$t) > Date.now() || !upcomingGames[element.gsx$eventname.$t]) {
                     upcomingGames[element.gsx$eventname.$t] = {
                         "date": element.gsx$commence.$t,
                         "homeTeam": "",

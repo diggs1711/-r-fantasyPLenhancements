@@ -87,12 +87,13 @@
     async function openMiniLeagueTable(league, currentGameweek) {
         let leagueDataPromise = requestData(leagueUrl + league.id);
         liveLeaguesTable.classList.add('animated', 'fadeOutDown');
-        livePlayerData = (await getLiveData(currentGameweek)).elements;
+        
 
         leagueDataPromise.then(function (result) {
             leagueName.innerHTML = "";
             leagueName.appendChild(document.createTextNode(result.league.name));
-
+            livePlayerData = (await getLiveData(currentGameweek)).elements;
+            
             let league = result.standings.results.map(function (player) {
                 return {
                     "name": player.entry_name,
@@ -127,18 +128,26 @@
                         }
                     });
 
-                    currPlayer.total = currPlayer.total - currentGameweekPoints;
+                    let addedPoints = 0;
+
+                    if(latestPlayerPoints >= 0 && currentGameweekPoints >= 0) {
+                        addedPoints = latestPlayerPoints - currentGameweekPoints;
+                    } else {
+                        addedPoints -= (Math.abs(latestPlayerPoints) + Math.abs(currentGameweekPoints));
+                    }
 
                     if (currentGameweekPoints !== latestPlayerPoints) {
-                        currPlayer.gameweek_points = latestPlayerPoints;
+                        currPlayer.gameweek_points += addedPoints;
                     }
+                    
                     currPlayer.chip = result.active_chip;
-                    currPlayer.total += currentGameweekPoints;
+                    currPlayer.total += addedPoints;
                     leaguePlayers[index] = currPlayer;
                 })
 
                 leaguePlayers.sort((a, b) => b.total - a.total);
-console.log(leaguePlayers);
+
+                classicLeagueBody.innerHTML = "";
                 leaguePlayers.forEach(function (player) {
                     let row = document.createElement("tr");
                     for (const key in player) {
@@ -152,7 +161,7 @@ console.log(leaguePlayers);
                     }
                     classicLeagueBody.appendChild(row);
                     classicLeagueDiv.classList.remove("hidden");
-                })
+                });
 
             })
 
