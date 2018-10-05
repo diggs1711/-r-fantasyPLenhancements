@@ -116,7 +116,6 @@
             Promise.all(latestPicksPromises).then(function (players) {
                 players.forEach(function (result, index) {
                     let currPlayer = leaguePlayers[index];
-                    console.log(result);
                     let currentGameweekPoints = currPlayer.gameweek_points;
                     let playerPicks = result.picks;
                     let latestPlayerPoints = 0;
@@ -127,6 +126,14 @@
                             let totalPlayerPoints = livePlayerData[playerElementId].stats.total_points * pick.multiplier;
                             latestPlayerPoints += totalPlayerPoints;
                         }
+                        if(pick.multiplier > 1) {
+
+                            let captain = window.playerData.find(function(player) {
+                                return player.id === pick.element;
+                            });
+                            currPlayer.captain = captain.name;
+                        }
+
                     });
 
                     let addedPoints = 0;

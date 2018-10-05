@@ -328,7 +328,7 @@
 
   let createFixtureScheduleList = (data) => {
     let avgDiff = data.sort((a, b) => a.averageDifficulty - b.averageDifficulty);
-    
+
     avgDiff.forEach(function (d) {
       let fixtures = d['fixtures'];
       let teamFixtures = document.createElement("li");
@@ -382,6 +382,7 @@
   playerDataPromise.then(function (data) {
     //player data
     let playerData = parsePlayerData(data['elements']);
+    window.playerData = playerData;
 
     //gameweek transfers
     let top5TransfersIn = getTop5(playerData, 'transfers_in_week');
