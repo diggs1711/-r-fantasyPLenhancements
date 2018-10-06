@@ -4,6 +4,7 @@
     let loggedInUserUrl = "https://fantasy.premierleague.com/drf/bootstrap-dynamic";
     let userMainUrl = "https://fantasy.premierleague.com/drf/my-team/";
     let liveDataUrl = "https://fantasy.premierleague.com/drf/event/";
+    let playerHistoryUrl = "https://fantasy.premierleague.com/drf/entry/";
     let leaguesBody = document.querySelectorAll(".live-leagues-body")[0];
     const latestPicksBaseUrl = "https://fantasy.premierleague.com/drf/entry/";
     const liveLeaguesTable = document.querySelectorAll(".live-leagues-table")[0];
@@ -94,6 +95,7 @@
             let liveData = await getLiveData(currentGameweek);
             let livePlayerData = liveData.elements;
             let league = result.standings.results.map(function (player) {
+
                 return {
                     "name": player.entry_name,
                     "rank": player.rank,
@@ -106,21 +108,23 @@
             liveLeaguesTable.classList.add("hidden");
             classicLeagueBody.innerHTML = "";
             let latestPicksPromises = [];
+            let previousGameweekPromises = [];
             let leaguePlayers = [];
 
             league.forEach(function (player) {
                 latestPicksPromises.push(requestData(latestPicksBaseUrl + "/" + player.entry_id + "/event/" + currentGameweek + "/picks"));
                 leaguePlayers.push(player);
-            })
+                previousGameweekPromises.push(requestData(playerHistoryUrl + player.entry_id + "/history"));
+            });
 
             Promise.all(latestPicksPromises).then(function (players) {
+
                 players.forEach(function (result, index) {
                     let currPlayer = leaguePlayers[index];
-                    let currentGameweekPoints = currPlayer.gameweek_points;
                     let playerPicks = result.picks;
                     let latestPlayerPoints = 0;
                     currPlayer.gameweek_transfers = result.entry_history.event_transfers;
-                    currPlayer.transfer_cost =  0 - result.entry_history.event_transfers_cost;
+                    currPlayer.transfer_cost = 0 - result.entry_history.event_transfers_cost;
 
                     playerPicks.forEach(function (pick) {
                         if (result.active_chip === "bboost" || pick.position <= 11) {
@@ -128,62 +132,71 @@
                             let totalPlayerPoints = livePlayerData[playerElementId].stats.total_points * pick.multiplier;
                             latestPlayerPoints += totalPlayerPoints;
                         }
-                        if(pick.multiplier > 1) {
+                        if (pick.multiplier > 1) {
 
-                            let captain = window.playerData.find(function(player) {
+                            let captain = window.playerData.find(function (player) {
                                 return player.id === pick.element;
                             });
                             currPlayer.captain = captain.name;
                         }
 
                     });
-
-                    let addedPoints = 0;
-                    console.log(result);
-
-                    if (latestPlayerPoints >= 0 && currentGameweekPoints >= 0) {
-                        addedPoints = latestPlayerPoints - currentGameweekPoints;
-                    } else if(latestPlayerPoints < 0 && currentGameweekPoints < 0) {
-                        addedPoints = 0 - (Math.abs(latestPlayerPoints) + Math.abs(currentGameweekPoints));
-                    }
-
-                    if (currentGameweekPoints === currPlayer.total - latestPlayerPoints) {
-                        currPlayer.gameweek_points += addedPoints;
-                    }
+                    console.log(currPlayer);
 
                     currPlayer.chip = result.active_chip;
-                    currPlayer.total += addedPoints - result.entry_history.event_transfers_cost;
+                    currPlayer.gameweek_points = latestPlayerPoints - result.entry_history.event_transfers_cost;
                     leaguePlayers[index] = currPlayer;
+                });
+
+                Promise.all(previousGameweekPromises).then(function (result) {
+
+                    result.forEach(function (player) {
+                        let playerId = player.entry.id;
+
+                        let totalPointsLastWeek = player.history.find(function (gameweek) {
+                            return gameweek.event === currentGameweek - 1;
+                        }).total_points;
+
+                        let p = leaguePlayers.find(function (p) {
+                            return p.entry_id === playerId;
+                        });
+
+                        p.total_points = totalPointsLastWeek + p.gameweek_points;
+                    });
+
+                    leaguePlayers.sort((a, b) => b.total - a.total);
+
+                    classicLeagueBody.innerHTML = "";
+                    let previousRank = 0;
+                    let previousPoints = 0;
+
+                    leaguePlayers.forEach(function (player, index) {
+
+                        if (previousPoints === player.total) {
+                            player.rank = previousRank;
+                        } else {
+                            previousRank = index + 1;
+                            player.rank = previousRank;
+                        }
+                        previousPoints = player.total;
+
+                        let row = document.createElement("tr");
+                        for (const key in player) {
+                            if (player.hasOwnProperty(key) && key != "entry_id") {
+                                const element = player[key];
+                                let cell = document.createElement("td");
+                                cell.classList.add("league-player");
+                                cell.appendChild(document.createTextNode(element));
+                                row.appendChild(cell);
+                            }
+                        }
+                        classicLeagueBody.appendChild(row);
+                        classicLeagueDiv.classList.remove("hidden");
+                    });
+
                 })
 
-                leaguePlayers.sort((a, b) => b.total - a.total);
 
-                classicLeagueBody.innerHTML = "";
-                let previousRank = 0;
-                let previousPoints = 0;
-                leaguePlayers.forEach(function (player, index) {
-
-                    if(previousPoints === player.total) {
-                        player.rank = previousRank;
-                    } else {
-                        previousRank = index + 1;
-                        player.rank = previousRank;
-                    }
-                    previousPoints = player.total;
-
-                    let row = document.createElement("tr");
-                    for (const key in player) {
-                        if (player.hasOwnProperty(key) && key != "entry_id") {
-                            const element = player[key];
-                            let cell = document.createElement("td");
-                            cell.classList.add("league-player");
-                            cell.appendChild(document.createTextNode(element));
-                            row.appendChild(cell);
-                        }
-                    }
-                    classicLeagueBody.appendChild(row);
-                    classicLeagueDiv.classList.remove("hidden");
-                });
 
             })
 
@@ -194,7 +207,5 @@
     let getLiveData = function (currGameweek) {
         return requestData(liveDataUrl + currGameweek + "/live");
     };
-
-
 
 })();
