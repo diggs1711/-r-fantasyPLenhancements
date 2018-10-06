@@ -139,14 +139,15 @@
                     });
 
                     let addedPoints = 0;
+                    console.log(result);
 
                     if (latestPlayerPoints >= 0 && currentGameweekPoints >= 0) {
                         addedPoints = latestPlayerPoints - currentGameweekPoints;
-                    } else {
+                    } else if(latestPlayerPoints < 0 && currentGameweekPoints < 0) {
                         addedPoints = 0 - (Math.abs(latestPlayerPoints) + Math.abs(currentGameweekPoints));
                     }
 
-                    if (currentGameweekPoints !== latestPlayerPoints) {
+                    if (currentGameweekPoints === currPlayer.total - latestPlayerPoints) {
                         currPlayer.gameweek_points += addedPoints;
                     }
 
@@ -166,9 +167,10 @@
                         player.rank = previousRank;
                     } else {
                         previousRank = index + 1;
+                        player.rank = previousRank;
                     }
                     previousPoints = player.total;
-                    
+
                     let row = document.createElement("tr");
                     for (const key in player) {
                         if (player.hasOwnProperty(key) && key != "entry_id") {
