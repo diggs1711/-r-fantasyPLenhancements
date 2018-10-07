@@ -1,7 +1,7 @@
 {
     "name": "FPL Stats Insights",
-    "version": "0.0.1.4",
-    "description": "Provides quick and easy way to view live FPL Data from your browser",
+    "version": "0.0.1.7",
+    "description": "View live FPL ",
     "manifest_version": 2,
     "permissions": ["activeTab", "declarativeContent", "storage", "https://fantasy.premierleague.com/drf/bootstrap-static"],
       "browser_action": {

@@ -14,13 +14,22 @@
     const backToLeagueListBtn = document.querySelectorAll(".league-back-btn")[0];
     const leagesDiv = document.querySelectorAll(".live-leagues")[0];
     const leagueName = document.querySelectorAll(".league-name")[0];
+    const refreshLeagueBtn = document.querySelectorAll(".classic-league__btn")[0];
+    let currentMiniLeagueView = null;
+    let currGameweek = 0;
 
     backToLeagueListBtn.addEventListener("click", event => {
+        currentGameweek = 0;
+        currentMiniLeagueView = null;
         classicLeagueDiv.classList.add("hidden");
         liveLeaguesTable.classList.remove("hidden");
         liveLeaguesTable.classList.remove("animated");
         liveLeaguesTable.classList.remove("fadeOutDown");
     });
+
+    refreshLeagueBtn.addEventListener("click", event => {
+        openMiniLeagueTable(currentMiniLeagueView, currGameweek);
+    })
 
     let requestData = (Url) => {
         return new Promise(function (resolve, reject) {
@@ -47,7 +56,7 @@
             return;
         }
 
-        let currentGameweek = result.entry.current_event;
+        currGameweek = result.entry.current_event;
 
 
         userId = result.entry.id
@@ -74,7 +83,7 @@
                         cell.appendChild(document.createTextNode(element));
                         row.appendChild(cell);
 
-                        cell.addEventListener("click", openMiniLeagueTable.bind(this, league, currentGameweek))
+                        cell.addEventListener("click", openMiniLeagueTable.bind(this, league, currGameweek))
                     }
                 }
 
@@ -85,6 +94,8 @@
     });
 
     async function openMiniLeagueTable(league, currentGameweek) {
+        currentMiniLeagueView = league;
+        currGameweek = currentGameweek;
         let leagueDataPromise = requestData(leagueUrl + league.id);
         liveLeaguesTable.classList.add('animated', 'fadeOutDown');
 
@@ -125,6 +136,8 @@
                     let latestPlayerPoints = 0;
                     currPlayer.gameweek_transfers = result.entry_history.event_transfers;
                     currPlayer.transfer_cost = 0 - result.entry_history.event_transfers_cost;
+                    currPlayer.team_value = (result.entry_history.value - result.entry_history.bank ) / 10 ;
+                    currPlayer.money_bank = result.entry_history.bank / 10;
 
                     playerPicks.forEach(function (pick) {
                         if (result.active_chip === "bboost" || pick.position <= 11) {
@@ -141,8 +154,6 @@
                         }
 
                     });
-                    console.log(currPlayer);
-
                     currPlayer.chip = result.active_chip;
                     currPlayer.gameweek_points = latestPlayerPoints - result.entry_history.event_transfers_cost;
                     leaguePlayers[index] = currPlayer;
@@ -161,7 +172,7 @@
                             return p.entry_id === playerId;
                         });
 
-                        p.total_points = totalPointsLastWeek + p.gameweek_points;
+                        p.total = totalPointsLastWeek + p.gameweek_points;
                     });
 
                     leaguePlayers.sort((a, b) => b.total - a.total);

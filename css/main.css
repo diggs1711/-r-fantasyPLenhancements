@@ -13,7 +13,7 @@
 }
 
 .team-name {
-  width: 30%;
+  width: 40%;
 }
 
 main {
@@ -773,6 +773,17 @@ nav ul li a.current {
   min-width: 300px;
 }
 
+.classic-league__btn {
+  background-color: #fff;
+  color: #525151;
+  border: none;
+  padding: .5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: Ubuntu;
+  cursor: pointer;
+}
+
 .league,
 .league-player,
 .match-bet {
@@ -780,6 +791,7 @@ nav ul li a.current {
   padding: .6rem;
   font-size: .7rem;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .league-back-btn {
@@ -809,6 +821,7 @@ tr:nth-child(odd) {
 
 table {
   margin-bottom: 20px;
+  width: 100%;
 }
 
 section {
