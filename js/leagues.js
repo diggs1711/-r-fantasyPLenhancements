@@ -28,6 +28,7 @@
     });
 
     refreshLeagueBtn.addEventListener("click", event => {
+        classicLeagueDiv.classList.add('animated', 'rotateOut');
         openMiniLeagueTable(currentMiniLeagueView, currGameweek);
     })
 
@@ -41,10 +42,19 @@
                     if (xhr.status === 200) {
                         resolve(JSON.parse(xhr.responseText));
                     } else {
+                        if(xhr.status === 429) {
+                            alert("Seems like someone is a bit eager... Your rate limit has been reached, please wait a few seconds and click refresh!");
+                        }
+                        console.log(xhr);
                         reject(Error(xhr.statusText));
                     }
                 }
             };
+
+            xhr.onerror = function(error) {
+                reject(Error("Network Error"));
+            };
+
             xhr.send(null);
         })
     };
@@ -101,6 +111,7 @@
 
 
         leagueDataPromise.then(async function (result) {
+            
             leagueName.innerHTML = "";
             leagueName.appendChild(document.createTextNode(result.league.name));
             let liveData = await getLiveData(currentGameweek);
@@ -202,6 +213,7 @@
                             }
                         }
                         classicLeagueBody.appendChild(row);
+                        classicLeagueDiv.classList.remove('animated', 'rotateOut');
                         classicLeagueDiv.classList.remove("hidden");
                     });
 

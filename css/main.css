@@ -782,6 +782,7 @@ nav ul li a.current {
   font-weight: bold;
   font-family: Ubuntu;
   cursor: pointer;
+  float: right;
 }
 
 .league,
